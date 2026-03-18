@@ -1,0 +1,2175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberTrace — Digital Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #040608;
+  --panel:     #080d12;
+  --panel2:    #0c1318;
+  --border:    #0f2a3a;
+  --accent:    #00f5ff;
+  --accent2:   #ff003c;
+  --green:     #00ff88;
+  --amber:     #ffb700;
+  --text:      #c8d8e0;
+  --muted:     #3a5060;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-ui:   'Rajdhani', sans-serif;
+  --font-head: 'Orbitron', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── SCANLINE OVERLAY ── */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,245,255,0.015) 2px,
+    rgba(0,245,255,0.015) 4px
+  );
+  pointer-events:none;
+  z-index:9999;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+#sidebar::before {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation: scanH 3s linear infinite;
+}
+
+@keyframes scanH {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.logo-area {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-icon {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px var(--accent);
+}
+
+.logo-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 6px;
+  animation: pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 8px var(--green);
+}
+
+@keyframes pulse {
+  0%,100% { opacity:1; }
+  50%      { opacity:0.3; }
+}
+
+.nav-section {
+  padding: 16px 12px 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  position: relative;
+  border-left: 2px solid transparent;
+}
+
+.nav-item:hover {
+  color: var(--accent);
+  background: rgba(0,245,255,0.04);
+  border-left-color: var(--accent);
+}
+
+.nav-item.active {
+  color: var(--accent);
+  background: rgba(0,245,255,0.07);
+  border-left-color: var(--accent);
+}
+
+.nav-item .nav-icon { font-size: 16px; width: 20px; text-align:center; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent2);
+  color: #fff;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+/* ── MAIN AREA ── */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  height: 56px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.topbar-case {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.topbar-case span {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.topbar-spacer { flex:1; }
+
+.topbar-stat {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.topbar-stat b { color: var(--accent); }
+
+#clock {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--green);
+  text-shadow: 0 0 10px var(--green);
+  min-width: 90px;
+  text-align: right;
+}
+
+/* ── STATS ROW ── */
+#statsrow {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.stat-card {
+  background: var(--panel2);
+  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content:'';
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.stat-card:hover::after { transform: scaleX(1); }
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 0 20px rgba(0,245,255,0.4);
+  line-height: 1;
+}
+
+.stat-value.red   { color: var(--accent2); text-shadow: 0 0 20px rgba(255,0,60,0.4); }
+.stat-value.green { color: var(--green);   text-shadow: 0 0 20px rgba(0,255,136,0.4); }
+.stat-value.amber { color: var(--amber);   text-shadow: 0 0 20px rgba(255,183,0,0.4); }
+
+.stat-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+}
+
+/* ── CONTENT AREA ── */
+#content {
+  flex:1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* ── SECTIONS ── */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── PANEL ── */
+.panel {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,245,255,0.02);
+}
+
+.panel-title {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.panel-title-red { color: var(--accent2); }
+
+.panel-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.panel-dot-red { background: var(--accent2); box-shadow: 0 0 8px var(--accent2); }
+
+.panel-body { padding: 18px; }
+
+/* ── GRID LAYOUTS ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* ── FORM ELEMENTS ── */
+.field { margin-bottom: 14px; }
+
+.field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 9px 12px;
+  border-radius: 2px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(0,245,255,0.1);
+}
+
+.field textarea { resize: vertical; min-height: 90px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+  box-shadow: 0 0 20px rgba(0,245,255,0.2);
+}
+
+.btn-primary:hover {
+  background: #00dde8;
+  box-shadow: 0 0 30px rgba(0,245,255,0.4);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: var(--accent2);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255,0,60,0.2);
+}
+
+.btn-danger:hover {
+  box-shadow: 0 0 30px rgba(255,0,60,0.4);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.btn-ghost:hover {
+  background: rgba(0,245,255,0.08);
+}
+
+/* ── RISK METER ── */
+.risk-display {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.risk-number {
+  font-family: var(--font-head);
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1;
+  transition: all 0.5s;
+}
+
+.risk-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 3px;
+  margin-top: 6px;
+  text-transform: uppercase;
+}
+
+.risk-bar-wrap {
+  margin: 14px 0;
+  height: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.risk-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  transition: width 0.8s ease, background 0.5s;
+}
+
+.risk-reasons {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.risk-reasons .reason {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.risk-reasons .reason:last-child { border-bottom: none; }
+
+/* ── TABLE ── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.data-table th {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,245,255,0.02);
+}
+
+.data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(15,42,58,0.5);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.data-table tr:hover td { background: rgba(0,245,255,0.02); }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  border-radius: 2px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.badge-critical { background: rgba(255,0,60,0.15); color: var(--accent2); border: 1px solid rgba(255,0,60,0.3); }
+.badge-high     { background: rgba(255,100,0,0.15); color: #ff6400; border: 1px solid rgba(255,100,0,0.3); }
+.badge-medium   { background: rgba(255,183,0,0.15); color: var(--amber); border: 1px solid rgba(255,183,0,0.3); }
+.badge-low      { background: rgba(0,255,136,0.15); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
+
+/* ── SUSPECT CARDS ── */
+.suspect-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.suspect-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.suspect-card::before {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+.suspect-card:hover { border-color: var(--accent); }
+.suspect-card:hover::before { transform: scaleX(1); }
+
+.suspect-avatar {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  margin: 0 auto 10px;
+  object-fit: cover;
+  background: var(--panel2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.suspect-avatar img {
+  width:100%; height:100%;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.suspect-name {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.suspect-handle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+/* ── TIMELINE ── */
+.timeline { position: relative; padding-left: 30px; }
+
+.timeline::before {
+  content:'';
+  position:absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+  animation: fadeInLeft 0.4s ease both;
+}
+
+@keyframes fadeInLeft {
+  from { opacity:0; transform: translateX(-10px); }
+  to   { opacity:1; transform: translateX(0); }
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -26px;
+  top: 4px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  border: 2px solid var(--bg);
+}
+
+.timeline-dot.red { background: var(--accent2); box-shadow: 0 0 10px var(--accent2); }
+.timeline-dot.amber { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
+.timeline-dot.green { background: var(--green); box-shadow: 0 0 10px var(--green); }
+
+.timeline-time {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  margin-bottom: 3px;
+}
+
+.timeline-title {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.timeline-desc {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.6;
+}
+
+/* ── NETWORK GRAPH ── */
+#networkCanvas {
+  width: 100%;
+  height: 380px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: grab;
+}
+
+.network-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.net-stat {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 2px;
+  text-align: center;
+}
+
+.net-stat-val {
+  font-family: var(--font-head);
+  font-size: 22px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.net-stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* ── IMAGE METADATA ── */
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.meta-item {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 2px;
+}
+
+.meta-key {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.meta-val {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  word-break: break-all;
+}
+
+.meta-val.red { color: var(--accent2); }
+.meta-val.green { color: var(--green); }
+.meta-val.amber { color: var(--amber); }
+
+/* ── DROP ZONE ── */
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 4px;
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--panel);
+}
+
+.dropzone:hover, .dropzone.dragover {
+  border-color: var(--accent);
+  background: rgba(0,245,255,0.03);
+}
+
+.dropzone-icon { font-size: 36px; margin-bottom: 10px; }
+
+.dropzone-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+/* ── MAP LINK ── */
+.map-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(0,255,136,0.08);
+  border: 1px solid rgba(0,255,136,0.3);
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border-radius: 2px;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: all 0.2s;
+}
+
+.map-link:hover {
+  background: rgba(0,255,136,0.15);
+  box-shadow: 0 0 10px rgba(0,255,136,0.2);
+}
+
+/* ── LOADING ── */
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  padding: 12px 0;
+}
+
+.loading-dots span {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin: 0 2px;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%,80%,100% { opacity:0.2; transform: scale(0.8); }
+  40%          { opacity:1;   transform: scale(1.2); }
+}
+
+/* ── ALERT ── */
+.alert {
+  padding: 12px 16px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-bottom: 12px;
+  display: none;
+}
+
+.alert.show { display: block; }
+.alert-success { background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.3); color: var(--green); }
+.alert-error   { background: rgba(255,0,60,0.08); border: 1px solid rgba(255,0,60,0.3); color: var(--accent2); }
+.alert-info    { background: rgba(0,245,255,0.08); border: 1px solid rgba(0,245,255,0.3); color: var(--accent); }
+
+/* ── REPORT ── */
+.report-checklist label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+
+.report-checklist label:last-child { border-bottom: none; }
+
+.report-checklist input[type=checkbox] {
+  width: auto;
+  accent-color: var(--accent);
+}
+
+/* ── NETWORK ADD FORM ── */
+.connection-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(0,245,255,0.08);
+  border: 1px solid rgba(0,245,255,0.2);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  margin: 4px;
+}
+
+.connection-tag button {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.section-title {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.section-title-red { color: var(--accent2); }
+
+.section-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+  letter-spacing: 1px;
+}
+
+/* ── BLINK CRITICAL ── */
+@keyframes blinkCritical {
+  0%,100% { box-shadow: 0 0 10px rgba(255,0,60,0.5); }
+  50%     { box-shadow: 0 0 30px rgba(255,0,60,0.9); }
+}
+
+.critical-blink {
+  animation: blinkCritical 1s ease-in-out infinite;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ SIDEBAR -->
+<nav id="sidebar">
+  <div class="logo-area">
+    <div class="logo-icon">CYBER<br>TRACE</div>
+    <div class="logo-sub"><span class="status-dot"></span>SYSTEM ONLINE</div>
+  </div>
+
+  <div class="nav-section">INVESTIGATION</div>
+  <div class="nav-item active" onclick="showSection('overview')">
+    <span class="nav-icon">⬡</span> Overview
+  </div>
+  <div class="nav-item" onclick="showSection('analysis')">
+    <span class="nav-icon">⟁</span> Text Analysis
+    <span class="nav-badge" id="badge-analysis">AI</span>
+  </div>
+  <div class="nav-item" onclick="showSection('image')">
+    <span class="nav-icon">◈</span> Image Forensics
+  </div>
+
+  <div class="nav-section">INTELLIGENCE</div>
+  <div class="nav-item" onclick="showSection('network')">
+    <span class="nav-icon">⬡</span> Network Map
+  </div>
+  <div class="nav-item" onclick="showSection('suspects')">
+    <span class="nav-icon">◉</span> Suspects
+  </div>
+  <div class="nav-item" onclick="showSection('evidence')">
+    <span class="nav-icon">▣</span> Evidence DB
+  </div>
+
+  <div class="nav-section">CASE</div>
+  <div class="nav-item" onclick="showSection('timeline')">
+    <span class="nav-icon">⏱</span> Timeline
+  </div>
+  <div class="nav-item" onclick="showSection('report')">
+    <span class="nav-icon">⬠</span> PDF Report
+  </div>
+
+  <div class="sidebar-footer">
+    CASE #2026-001<br>
+    INVESTIGATOR: DET. RAJ<br>
+    CLASSIFICATION: RESTRICTED<br>
+    <br>
+    v1.0.0 — CYBERTRACE
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════ MAIN -->
+<div id="main">
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div class="topbar-case">ACTIVE CASE: <span>#2026-001 — LEAKED VIDEO INVESTIGATION</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-stat">STATUS: <b>ACTIVE</b></div>
+    <div class="topbar-stat">THREAT: <b style="color:var(--accent2)">CRITICAL</b></div>
+    <div id="clock">--:--:--</div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div id="statsrow">
+    <div class="stat-card">
+      <div class="stat-label">TOTAL EVIDENCE</div>
+      <div class="stat-value" id="stat-evidence">0</div>
+      <div class="stat-sub">items collected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">FLAGGED ITEMS</div>
+      <div class="stat-value red" id="stat-flagged">0</div>
+      <div class="stat-sub">high risk detected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">AVG RISK SCORE</div>
+      <div class="stat-value amber" id="stat-risk">0</div>
+      <div class="stat-sub">out of 100</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">SUSPECTS</div>
+      <div class="stat-value" id="stat-suspects">0</div>
+      <div class="stat-sub">profiles created</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">NETWORK NODES</div>
+      <div class="stat-value green" id="stat-nodes">0</div>
+      <div class="stat-sub">connected accounts</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- ══ OVERVIEW ══ -->
+    <div id="section-overview" class="section active">
+      <div class="section-header">
+        <div>
+          <div class="section-title">INTELLIGENCE OVERVIEW</div>
+          <div class="section-sub">CASE #2026-001 — REAL TIME DASHBOARD</div>
+        </div>
+        <button class="btn btn-primary" onclick="refreshAll()">⟳ REFRESH</button>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-dot"></div>
+            <div class="panel-title">QUICK ACTIONS</div>
+          </div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:10px;">
+            <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="showSection('analysis')">⟁ ANALYZE NEW TEXT</button>
+            <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="showSection('image')">◈ UPLOAD IMAGE FOR FORENSICS</button>
+            <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="showSection('suspects')">◉ ADD NEW SUSPECT</button>
+            <button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="showSection('report')">⬠ GENERATE PDF REPORT</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-dot-red"></div>
+            <div class="panel-title panel-title-red">RECENT ALERTS</div>
+          </div>
+          <div class="panel-body" id="recent-alerts">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);text-align:center;padding:20px 0;">
+              No alerts yet. Submit evidence to begin analysis.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-dot"></div>
+          <div class="panel-title">HOW TO USE THIS PLATFORM</div>
+        </div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+            <div style="text-align:center;padding:16px;background:var(--panel);border:1px solid var(--border);border-radius:2px;">
+              <div style="font-size:28px;margin-bottom:8px;">⟁</div>
+              <div style="font-family:var(--font-head);font-size:10px;color:var(--accent);letter-spacing:1px;margin-bottom:6px;">STEP 1</div>
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);">Paste suspicious text into Text Analysis for AI risk scoring</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:var(--panel);border:1px solid var(--border);border-radius:2px;">
+              <div style="font-size:28px;margin-bottom:8px;">◈</div>
+              <div style="font-family:var(--font-head);font-size:10px;color:var(--accent);letter-spacing:1px;margin-bottom:6px;">STEP 2</div>
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);">Upload image to extract GPS, device and hidden metadata</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:var(--panel);border:1px solid var(--border);border-radius:2px;">
+              <div style="font-size:28px;margin-bottom:8px;">⬡</div>
+              <div style="font-family:var(--font-head);font-size:10px;color:var(--accent);letter-spacing:1px;margin-bottom:6px;">STEP 3</div>
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);">Map suspect connections in the Network graph</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:var(--panel);border:1px solid var(--border);border-radius:2px;">
+              <div style="font-size:28px;margin-bottom:8px;">⬠</div>
+              <div style="font-family:var(--font-head);font-size:10px;color:var(--accent);letter-spacing:1px;margin-bottom:6px;">STEP 4</div>
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);">Generate a court-ready PDF report with one click</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TEXT ANALYSIS ══ -->
+    <div id="section-analysis" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">TEXT ANALYSIS</div>
+          <div class="section-sub">AI-POWERED SENTIMENT & RISK SCORING</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-dot"></div>
+              <div class="panel-title">SUBMIT EVIDENCE</div>
+            </div>
+            <div class="panel-body">
+              <div id="alert-analysis" class="alert"></div>
+              <div class="field">
+                <label>Suspect Username</label>
+                <input type="text" id="an-username" placeholder="@username">
+              </div>
+              <div class="field">
+                <label>Source Platform</label>
+                <select id="an-source">
+                  <option value="Twitter/X">Twitter / X</option>
+                  <option value="Instagram">Instagram</option>
+                  <option value="WhatsApp">WhatsApp</option>
+                  <option value="Facebook">Facebook</option>
+                  <option value="Telegram">Telegram</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Suspicious Text / Caption</label>
+                <textarea id="an-text" placeholder="Paste suspicious text, caption, or message here..."></textarea>
+              </div>
+              <button class="btn btn-primary" onclick="analyzeText()" style="width:100%;justify-content:center;">
+                ⟁ RUN AI ANALYSIS
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-dot-red"></div>
+              <div class="panel-title panel-title-red">RISK ASSESSMENT</div>
+            </div>
+            <div class="panel-body">
+              <div class="risk-display">
+                <div class="risk-number" id="risk-number" style="color:var(--muted);">--</div>
+                <div class="risk-label" id="risk-label" style="color:var(--muted);">AWAITING INPUT</div>
+                <div class="risk-bar-wrap">
+                  <div class="risk-bar" id="risk-bar"></div>
+                </div>
+              </div>
+
+              <div id="risk-details" style="font-family:var(--font-mono);font-size:11px;color:var(--muted);text-align:center;padding:10px 0;">
+                Submit text to see AI risk analysis
+              </div>
+
+              <div id="risk-reasons" class="risk-reasons"></div>
+            </div>
+          </div>
+
+          <div class="panel" id="entities-panel" style="display:none;">
+            <div class="panel-header">
+              <div class="panel-dot"></div>
+              <div class="panel-title">ENTITIES DETECTED</div>
+            </div>
+            <div class="panel-body" id="entities-body"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ IMAGE FORENSICS ══ -->
+    <div id="section-image" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">IMAGE FORENSICS</div>
+          <div class="section-sub">EXIF METADATA — GPS — DEVICE IDENTIFICATION</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-dot"></div>
+            <div class="panel-title">UPLOAD IMAGE</div>
+          </div>
+          <div class="panel-body">
+            <div id="alert-image" class="alert"></div>
+            <div class="dropzone" id="dropzone" onclick="document.getElementById('img-file').click()">
+              <div class="dropzone-icon">◈</div>
+              <div class="dropzone-text">
+                DRAG & DROP IMAGE HERE<br>or click to browse<br><br>
+                <span style="color:var(--accent);font-size:10px;">JPG · PNG · JPEG supported</span>
+              </div>
+            </div>
+            <input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+            <div id="img-preview" style="margin-top:12px;display:none;">
+              <img id="img-thumb" style="width:100%;max-height:200px;object-fit:contain;border:1px solid var(--border);border-radius:2px;">
+            </div>
+            <div id="img-loading" style="display:none;" class="loading">
+              <div class="loading-dots"><span></span><span></span><span></span></div>
+              EXTRACTING METADATA...
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-dot-red"></div>
+            <div class="panel-title panel-title-red">FORENSIC FINDINGS</div>
+          </div>
+          <div class="panel-body" id="img-results">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);text-align:center;padding:30px 0;">
+              Upload an image to extract forensic data
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NETWORK MAP ══ -->
+    <div id="section-network" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">NETWORK MAP</div>
+          <div class="section-sub">SUSPECT CONNECTION GRAPH — REAL TIME</div>
+        </div>
+        <button class="btn btn-ghost" onclick="loadNetwork()">⟳ REFRESH GRAPH</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-dot"></div>
+          <div class="panel-title">ADD CONNECTION</div>
+        </div>
+        <div class="panel-body">
+          <div style="display:flex;gap:12px;align-items:flex-end;">
+            <div class="field" style="flex:1;margin-bottom:0;">
+              <label>From User</label>
+              <input type="text" id="net-from" placeholder="@username_a">
+            </div>
+            <div style="font-family:var(--font-head);color:var(--accent);font-size:18px;padding-bottom:10px;">→</div>
+            <div class="field" style="flex:1;margin-bottom:0;">
+              <label>To User</label>
+              <input type="text" id="net-to" placeholder="@username_b">
+            </div>
+            <button class="btn btn-primary" onclick="addConnection()" style="margin-bottom:0;">ADD</button>
+          </div>
+          <div id="net-alert" class="alert" style="margin-top:10px;"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-dot"></div>
+          <div class="panel-title">NETWORK VISUALIZATION</div>
+        </div>
+        <div class="panel-body" style="padding:12px;">
+          <canvas id="networkCanvas"></canvas>
+          <div class="network-stats" id="network-stats">
+            <div class="net-stat"><div class="net-stat-val" id="ns-nodes">0</div><div class="net-stat-label">TOTAL NODES</div></div>
+            <div class="net-stat"><div class="net-stat-val" id="ns-edges">0</div><div class="net-stat-label">CONNECTIONS</div></div>
+            <div class="net-stat"><div class="net-stat-val" id="ns-density">0.0</div><div class="net-stat-label">DENSITY</div></div>
+            <div class="net-stat"><div class="net-stat-val" id="ns-central" style="font-size:14px;"></div><div class="net-stat-label">KEY SUSPECT</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SUSPECTS ══ -->
+    <div id="section-suspects" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">SUSPECT PROFILES</div>
+          <div class="section-sub">PERSON OF INTEREST DATABASE</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-dot"></div>
+            <div class="panel-title">ADD SUSPECT</div>
+          </div>
+          <div class="panel-body">
+            <div id="alert-suspect" class="alert"></div>
+            <div class="field">
+              <label>Full Name</label>
+              <input type="text" id="sp-name" placeholder="Suspect full name">
+            </div>
+            <div class="field">
+              <label>Username / Handle</label>
+              <input type="text" id="sp-username" placeholder="@username">
+            </div>
+            <div class="field">
+              <label>Platform</label>
+              <select id="sp-platform">
+                <option>Instagram</option>
+                <option>Twitter/X</option>
+                <option>WhatsApp</option>
+                <option>Facebook</option>
+                <option>Telegram</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Device (if known)</label>
+              <input type="text" id="sp-device" placeholder="e.g. Xiaomi Redmi 9 Power">
+            </div>
+            <div class="field">
+              <label>Investigator Notes</label>
+              <textarea id="sp-notes" placeholder="Any relevant notes..." style="min-height:60px;"></textarea>
+            </div>
+            <div class="field">
+              <label>Suspect Photo</label>
+              <input type="file" id="sp-photo" accept="image/*">
+            </div>
+            <button class="btn btn-primary" onclick="addSuspect()" style="width:100%;justify-content:center;">◉ ADD TO DATABASE</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-dot-red"></div>
+            <div class="panel-title panel-title-red">SUSPECT PROFILES</div>
+          </div>
+          <div class="panel-body">
+            <div class="suspect-grid" id="suspect-grid">
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);text-align:center;padding:30px 0;grid-column:1/-1;">
+                No suspects added yet
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ EVIDENCE DB ══ -->
+    <div id="section-evidence" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">EVIDENCE DATABASE</div>
+          <div class="section-sub">ALL COLLECTED INTELLIGENCE</div>
+        </div>
+        <button class="btn btn-ghost" onclick="loadEvidence()">⟳ REFRESH</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-dot"></div>
+          <div class="panel-title">EVIDENCE RECORDS</div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>USERNAME</th>
+                <th>PLATFORM</th>
+                <th>TEXT PREVIEW</th>
+                <th>SENTIMENT</th>
+                <th>RISK SCORE</th>
+                <th>LEVEL</th>
+                <th>FLAGGED</th>
+              </tr>
+            </thead>
+            <tbody id="evidence-tbody">
+              <tr>
+                <td colspan="7" style="text-align:center;color:var(--muted);padding:30px;">
+                  No evidence collected yet
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TIMELINE ══ -->
+    <div id="section-timeline" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">CASE TIMELINE</div>
+          <div class="section-sub">CHRONOLOGICAL INVESTIGATION LOG</div>
+        </div>
+        <button class="btn btn-ghost" onclick="addTimelineEvent()">+ ADD EVENT</button>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-dot"></div>
+            <div class="panel-title">ADD TIMELINE EVENT</div>
+          </div>
+          <div class="panel-body">
+            <div class="field">
+              <label>Time</label>
+              <input type="time" id="tl-time">
+            </div>
+            <div class="field">
+              <label>Event Title</label>
+              <input type="text" id="tl-title" placeholder="e.g. Video recorded on Xiaomi device">
+            </div>
+            <div class="field">
+              <label>Description</label>
+              <textarea id="tl-desc" placeholder="Details about this event..." style="min-height:60px;"></textarea>
+            </div>
+            <div class="field">
+              <label>Severity</label>
+              <select id="tl-severity">
+                <option value="blue">Information</option>
+                <option value="amber">Warning</option>
+                <option value="red">Critical</option>
+                <option value="green">Resolved</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="addTimelineEvent()" style="width:100%;justify-content:center;">ADD TO TIMELINE</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-dot-red"></div>
+            <div class="panel-title panel-title-red">EVENT LOG</div>
+          </div>
+          <div class="panel-body">
+            <div class="timeline" id="timeline-list">
+              <div class="timeline-item">
+                <div class="timeline-dot red"></div>
+                <div class="timeline-time">14:11:18</div>
+                <div class="timeline-title">Video Recorded</div>
+                <div class="timeline-desc">Photo/video captured on Xiaomi Redmi 9 Power (M2010J19SI) using rear camera. No filter applied.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot amber"></div>
+                <div class="timeline-time">14:15:00</div>
+                <div class="timeline-title">First Share Detected</div>
+                <div class="timeline-desc">Content uploaded by @unknown_uploader — only 4 minutes after recording. Suggests premeditated action.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot amber"></div>
+                <div class="timeline-time">14:23:00</div>
+                <div class="timeline-title">Viral Spread Begins</div>
+                <div class="timeline-desc">Content shared by @viral_page and @gossip_001. Network expanding rapidly.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-time">14:45:00</div>
+                <div class="timeline-title">Evidence Submitted</div>
+                <div class="timeline-desc">Evidence logged into CyberTrace platform. AI analysis initiated.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot red"></div>
+                <div class="timeline-time">15:00:00</div>
+                <div class="timeline-title">CRITICAL Risk Score</div>
+                <div class="timeline-desc">AI returned risk score 82/100 — CRITICAL. Case escalated to senior investigator.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PDF REPORT ══ -->
+    <div id="section-report" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">PDF REPORT GENERATOR</div>
+          <div class="section-sub">COURT-READY INVESTIGATION REPORT</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-dot"></div>
+            <div class="panel-title">REPORT CONFIGURATION</div>
+          </div>
+          <div class="panel-body">
+            <div id="alert-report" class="alert"></div>
+            <div class="field">
+              <label>Report Title</label>
+              <input type="text" id="rp-title" placeholder="e.g. Leaked Video Investigation Report" value="Digital Evidence Investigation Report">
+            </div>
+            <div class="field">
+              <label>Investigating Officer</label>
+              <input type="text" id="rp-officer" placeholder="Officer name / badge number">
+            </div>
+            <div class="field">
+              <label>Case Reference Number</label>
+              <input type="text" id="rp-case" placeholder="e.g. CYB-2026-001" value="CYB-2026-001">
+            </div>
+            <div class="field">
+              <label>Include in Report</label>
+              <div class="report-checklist">
+                <label><input type="checkbox" id="rp-all" checked> All Evidence</label>
+                <label><input type="checkbox" id="rp-flagged"> Flagged Items Only</label>
+                <label><input type="checkbox" id="rp-network" checked> Network Analysis</label>
+                <label><input type="checkbox" id="rp-suspects" checked> Suspect Profiles</label>
+              </div>
+            </div>
+            <button class="btn btn-danger" onclick="generateReport()" style="width:100%;justify-content:center;margin-top:8px;">
+              ⬠ GENERATE PDF REPORT
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-dot-red"></div>
+            <div class="panel-title panel-title-red">WHAT WILL BE INCLUDED</div>
+          </div>
+          <div class="panel-body">
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--panel);border:1px solid var(--border);border-radius:2px;">
+                <span style="color:var(--green);font-size:14px;">✓</span>
+                <div>
+                  <div style="font-family:var(--font-ui);font-weight:700;font-size:13px;">Case Summary</div>
+                  <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">Total evidence, risk levels, flagged items</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--panel);border:1px solid var(--border);border-radius:2px;">
+                <span style="color:var(--green);font-size:14px;">✓</span>
+                <div>
+                  <div style="font-family:var(--font-ui);font-weight:700;font-size:13px;">AI Analysis Results</div>
+                  <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">Sentiment, risk scores, detected entities</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--panel);border:1px solid var(--border);border-radius:2px;">
+                <span style="color:var(--green);font-size:14px;">✓</span>
+                <div>
+                  <div style="font-family:var(--font-ui);font-weight:700;font-size:13px;">Device Forensics</div>
+                  <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">Device model, GPS coordinates, timestamps</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--panel);border:1px solid var(--border);border-radius:2px;">
+                <span style="color:var(--green);font-size:14px;">✓</span>
+                <div>
+                  <div style="font-family:var(--font-ui);font-weight:700;font-size:13px;">Network Analysis</div>
+                  <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">Suspect connections, key hub identification</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--panel);border:1px solid var(--border);border-radius:2px;">
+                <span style="color:var(--green);font-size:14px;">✓</span>
+                <div>
+                  <div style="font-family:var(--font-ui);font-weight:700;font-size:13px;">Suspect Profiles</div>
+                  <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">All persons of interest with evidence links</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="report-download" style="margin-top:16px;display:none;">
+              <div class="alert alert-success show">✓ Report generated successfully!</div>
+              <a id="report-link" href="#" class="btn btn-ghost" style="width:100%;justify-content:center;text-decoration:none;">
+                ⬇ DOWNLOAD PDF REPORT
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+const API = 'http://127.0.0.1:8000';
+
+// ── NAVIGATION ──
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  event && event.currentTarget && event.currentTarget.classList.add('active');
+
+  // Find matching nav item
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if(n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + name + "'")) {
+      n.classList.add('active');
+    }
+  });
+
+  if(name === 'evidence') loadEvidence();
+  if(name === 'network')  loadNetwork();
+  if(name === 'suspects') loadSuspects();
+  if(name === 'overview') refreshAll();
+}
+
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-IN', {hour12: false});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── STATS ──
+async function refreshAll() {
+  try {
+    const ev = await fetch(API + '/api/evidence/all').then(r => r.json());
+    const fl = await fetch(API + '/api/evidence/flagged').then(r => r.json());
+    const sp = await fetch(API + '/api/suspects/all').then(r => r.json());
+    const ng = await fetch(API + '/api/network/graph').then(r => r.json());
+
+    document.getElementById('stat-evidence').textContent = ev.length || 0;
+    document.getElementById('stat-flagged').textContent  = fl.length || 0;
+    document.getElementById('stat-suspects').textContent = sp.length || 0;
+
+    if(ng.nodes) {
+      document.getElementById('stat-nodes').textContent = ng.nodes.length || 0;
+    }
+
+    if(ev.length > 0) {
+      const avg = Math.round(ev.reduce((a, e) => a + (e.risk?.score || 0), 0) / ev.length);
+      document.getElementById('stat-risk').textContent = avg;
+    }
+
+    // Recent alerts
+    if(fl.length > 0) {
+      const alertsHtml = fl.slice(0, 4).map(e => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+          <span style="color:var(--accent2);font-size:16px;">⚠</span>
+          <div>
+            <div style="font-family:var(--font-ui);font-weight:700;font-size:13px;color:var(--text);">${e.author_username || 'Unknown'}</div>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted);">Risk: ${e.risk?.score || 0} — ${e.risk?.risk_level || 'N/A'}</div>
+          </div>
+          <span class="badge badge-${(e.risk?.risk_level||'low').toLowerCase()}" style="margin-left:auto;">${e.risk?.risk_level || 'N/A'}</span>
+        </div>
+      `).join('');
+      document.getElementById('recent-alerts').innerHTML = alertsHtml;
+    }
+  } catch(e) {
+    console.error('Stats load failed:', e);
+  }
+}
+
+// ── TEXT ANALYSIS ──
+async function analyzeText() {
+  const text     = document.getElementById('an-text').value.trim();
+  const username = document.getElementById('an-username').value.trim();
+  const source   = document.getElementById('an-source').value;
+  const alertEl  = document.getElementById('alert-analysis');
+
+  if(!text) { showAlert(alertEl, 'error', 'Please enter text to analyze'); return; }
+
+  showAlert(alertEl, 'info', 'Running AI analysis...');
+
+  const btn = document.querySelector('#section-analysis .btn-primary');
+  if(btn) { btn.disabled = true; btn.textContent = 'ANALYZING...'; }
+
+  try {
+    const res = await fetch(API + '/api/analyze/text', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        text: text,
+        author_username: username || 'unknown',
+        source_platform: source,
+        save_to_db: true
+      })
+    });
+
+    if(!res.ok) throw new Error('API error: ' + res.status);
+
+    const data = await res.json();
+    console.log('API Response:', data);
+
+    // Handle both response formats
+    const d = data.data || data;
+    const score = d.risk?.score || d.risk_score || 0;
+    const level = d.risk?.risk_level || d.risk_level || 'LOW';
+    const sentiment = d.sentiment || {};
+    const reasons = d.risk?.reasons || d.risk_reasons || [];
+    const entities = d.entities || [];
+
+    const colors = { LOW: '#00ff88', MEDIUM: '#ffb700', HIGH: '#ff6400', CRITICAL: '#ff003c' };
+    const color  = colors[level] || '#00f5ff';
+
+    // Update risk number
+    document.getElementById('risk-number').textContent = score;
+    document.getElementById('risk-number').style.color = color;
+    document.getElementById('risk-number').style.textShadow = `0 0 30px ${color}`;
+    document.getElementById('risk-label').textContent = level;
+    document.getElementById('risk-label').style.color = color;
+
+    // Update risk bar
+    const bar = document.getElementById('risk-bar');
+    bar.style.width = score + '%';
+    bar.style.background = `linear-gradient(90deg, var(--green), ${color})`;
+
+    if(level === 'CRITICAL') {
+      document.getElementById('risk-number').classList.add('critical-blink');
+    } else {
+      document.getElementById('risk-number').classList.remove('critical-blink');
+    }
+
+    // Sentiment + confidence
+    document.getElementById('risk-details').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+        <div style="background:var(--panel);border:1px solid var(--border);padding:8px;border-radius:2px;text-align:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);">SENTIMENT</div>
+          <div style="font-family:var(--font-head);font-size:14px;color:${color};margin-top:3px;">${(sentiment.label || 'N/A').toUpperCase()}</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);padding:8px;border-radius:2px;text-align:center;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);">CONFIDENCE</div>
+          <div style="font-family:var(--font-head);font-size:14px;color:var(--accent);margin-top:3px;">${Math.round((sentiment.score || 0) * 100)}%</div>
+        </div>
+      </div>
+    `;
+
+    // Risk reasons
+    document.getElementById('risk-reasons').innerHTML = reasons.map(r => `
+      <div class="reason">
+        <span style="color:var(--accent2);">▸</span>
+        <span>${r}</span>
+      </div>
+    `).join('');
+
+    // Entities
+    if(entities.length > 0) {
+      document.getElementById('entities-panel').style.display = 'block';
+      document.getElementById('entities-body').innerHTML = entities.map(e => `
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
+          <span class="badge badge-medium">${e.entity_group || e.label || 'ENTITY'}</span>
+          <span style="font-family:var(--font-mono);font-size:12px;">${e.word}</span>
+          <span style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--muted);">${Math.round((e.score||0)*100)}%</span>
+        </div>
+      `).join('');
+    }
+
+    showAlert(alertEl, 'success', `✓ Analysis complete — Risk: ${score}/100 (${level})`);
+    refreshAll();
+
+  } catch(e) {
+    console.error('Analysis error:', e);
+    showAlert(alertEl, 'error', 'Analysis failed: ' + e.message);
+  } finally {
+    if(btn) { btn.disabled = false; btn.innerHTML = '⚠ RUN AI ANALYSIS'; }
+  }
+}
+
+// ── IMAGE UPLOAD ──
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+
+  // Preview
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('img-thumb').src = e.target.result;
+    document.getElementById('img-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+
+  uploadImage(file);
+}
+
+async function uploadImage(file) {
+  const alertEl  = document.getElementById('alert-image');
+  const loading  = document.getElementById('img-loading');
+  const results  = document.getElementById('img-results');
+
+  loading.style.display = 'flex';
+  results.innerHTML = '';
+  showAlert(alertEl, 'info', 'Extracting metadata...');
+
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res  = await fetch(API + '/api/image/analyze', { method: 'POST', body: formData });
+    const data = await res.json();
+    const meta = data.metadata || {};
+
+    loading.style.display = 'none';
+
+    let html = '<div class="meta-grid">';
+
+    // Device
+    if(meta.device && meta.device.brand) {
+      html += `
+        <div class="meta-item">
+          <div class="meta-key">📱 DEVICE BRAND</div>
+          <div class="meta-val green">${meta.device.brand}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">📱 DEVICE MODEL</div>
+          <div class="meta-val green">${meta.device.model || 'Unknown'}</div>
+        </div>
+      `;
+    }
+
+    // Timestamp
+    if(meta.datetime) {
+      html += `
+        <div class="meta-item">
+          <div class="meta-key">📅 DATE & TIME</div>
+          <div class="meta-val amber">${meta.datetime}</div>
+        </div>
+      `;
+    }
+
+    // File info
+    html += `
+      <div class="meta-item">
+        <div class="meta-key">📁 FILE SIZE</div>
+        <div class="meta-val">${meta.file_size || 'Unknown'}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">📐 DIMENSIONS</div>
+        <div class="meta-val">${meta.image_width || '?'} × ${meta.image_height || '?'} px</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">🖼 FORMAT</div>
+        <div class="meta-val">${meta.image_format || 'Unknown'}</div>
+      </div>
+    `;
+
+    // GPS
+    if(meta.gps && meta.gps.latitude !== 0 && meta.gps.longitude !== 0) {
+      html += `
+        <div class="meta-item" style="grid-column:1/-1;">
+          <div class="meta-key">📍 GPS COORDINATES</div>
+          <div class="meta-val green">${meta.gps.latitude}, ${meta.gps.longitude}</div>
+          <a href="${meta.gps.google_maps_url}" target="_blank" class="map-link">
+            🗺 OPEN IN GOOGLE MAPS
+          </a>
+        </div>
+      `;
+    } else {
+      html += `
+        <div class="meta-item" style="grid-column:1/-1;">
+          <div class="meta-key">📍 GPS STATUS</div>
+          <div class="meta-val red">No GPS lock — device was indoors or GPS disabled</div>
+        </div>
+      `;
+    }
+
+    html += '</div>';
+
+    // Summary findings
+    const findings = meta.summary?.findings || [];
+    const risks    = meta.summary?.risk_indicators || [];
+    if(findings.length > 0) {
+      html += `
+        <div style="margin-top:12px;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;">FINDINGS</div>
+          ${findings.map(f => `<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:11px;"><span style="color:var(--green);">▸</span>${f}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    if(risks.length > 0) {
+      html += `
+        <div style="margin-top:12px;">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;">RISK INDICATORS</div>
+          ${risks.map(r => `<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:11px;"><span style="color:var(--accent2);">⚠</span>${r}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    results.innerHTML = html;
+    showAlert(alertEl, 'success', 'Forensic extraction complete!');
+
+  } catch(e) {
+    loading.style.display = 'none';
+    showAlert(alertEl, 'error', 'Image analysis failed. Is the server running?');
+  }
+}
+
+// Drag and drop
+const dz = document.getElementById('dropzone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if(file && file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      document.getElementById('img-thumb').src = ev.target.result;
+      document.getElementById('img-preview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+    uploadImage(file);
+  }
+});
+
+// ── NETWORK ──
+let networkData = { nodes: [], edges: [] };
+
+async function addConnection() {
+  const from    = document.getElementById('net-from').value.trim();
+  const to      = document.getElementById('net-to').value.trim();
+  const alertEl = document.getElementById('net-alert');
+
+  if(!from || !to) { showAlert(alertEl, 'error', 'Enter both usernames'); return; }
+
+  try {
+    await fetch(API + '/api/network/connect', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ user1: from, user2: to, connection_type: 'shared' })
+    });
+    showAlert(alertEl, 'success', `Connection added: ${from} → ${to}`);
+    document.getElementById('net-from').value = '';
+    document.getElementById('net-to').value = '';
+    loadNetwork();
+  } catch(e) {
+    showAlert(alertEl, 'error', 'Failed to add connection');
+  }
+}
+
+async function loadNetwork() {
+  try {
+    const data = await fetch(API + '/api/network/graph').then(r => r.json());
+    networkData = data;
+    drawNetwork(data);
+
+    const an = await fetch(API + '/api/network/analyze').then(r => r.json());
+    document.getElementById('ns-nodes').textContent   = (data.nodes || []).length;
+    document.getElementById('ns-edges').textContent   = (data.edges || []).length;
+    document.getElementById('ns-density').textContent = (an.density || 0).toFixed(2);
+    document.getElementById('ns-central').textContent = an.most_connected || '—';
+  } catch(e) { console.error('Network load failed'); }
+}
+
+function drawNetwork(data) {
+  const canvas  = document.getElementById('networkCanvas');
+  const ctx     = canvas.getContext('2d');
+  const W = canvas.width  = canvas.offsetWidth;
+  const H = canvas.height = 380;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#080d12';
+  ctx.fillRect(0, 0, W, H);
+
+  const nodes  = data.nodes || [];
+  const edges  = data.edges || [];
+
+  if(nodes.length === 0) {
+    ctx.fillStyle = '#3a5060';
+    ctx.font = '12px Share Tech Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('No network data. Add connections above.', W/2, H/2);
+    return;
+  }
+
+  // Position nodes in a circle
+  const positions = {};
+  const cx = W/2, cy = H/2;
+  const r  = Math.min(W, H) * 0.32;
+
+  nodes.forEach((node, i) => {
+    const angle = (2 * Math.PI * i / nodes.length) - Math.PI/2;
+    positions[node] = {
+      x: cx + r * Math.cos(angle),
+      y: cy + r * Math.sin(angle)
+    };
+  });
+
+  // Draw edges
+  edges.forEach(e => {
+    const from = positions[e.source || e[0]];
+    const to   = positions[e.target || e[1]];
+    if(!from || !to) return;
+
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(to.x, to.y);
+    ctx.strokeStyle = 'rgba(0,245,255,0.2)';
+    ctx.lineWidth   = 1;
+    ctx.stroke();
+
+    // Arrow
+    const dx   = to.x - from.x;
+    const dy   = to.y - from.y;
+    const len  = Math.sqrt(dx*dx + dy*dy);
+    const ux   = dx/len, uy = dy/len;
+    const arrowX = to.x - ux*18;
+    const arrowY = to.y - uy*18;
+
+    ctx.beginPath();
+    ctx.moveTo(arrowX, arrowY);
+    ctx.lineTo(arrowX - ux*8 + uy*4, arrowY - uy*8 - ux*4);
+    ctx.lineTo(arrowX - ux*8 - uy*4, arrowY - uy*8 + ux*4);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0,245,255,0.4)';
+    ctx.fill();
+  });
+
+  // Draw nodes
+  nodes.forEach((node, i) => {
+    const pos = positions[node];
+    if(!pos) return;
+
+    // Count connections
+    const deg = edges.filter(e =>
+      (e.source || e[0]) === node || (e.target || e[1]) === node
+    ).length;
+
+    const radius = 14 + deg * 4;
+    const color  = i === 0 ? '#ff003c' : (deg > 2 ? '#ffb700' : '#00f5ff');
+
+    // Glow
+    ctx.shadowColor = color;
+    ctx.shadowBlur  = 15;
+
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, radius, 0, Math.PI*2);
+    ctx.fillStyle = color + '22';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, radius, 0, Math.PI*2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 2;
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+
+    // Label
+    ctx.fillStyle  = '#c8d8e0';
+    ctx.font       = 'bold 10px Share Tech Mono';
+    ctx.textAlign  = 'center';
+    ctx.fillText(node.length > 12 ? node.slice(0,12)+'…' : node, pos.x, pos.y + radius + 14);
+  });
+}
+
+// ── SUSPECTS ──
+async function addSuspect() {
+  const alertEl = document.getElementById('alert-suspect');
+  const name    = document.getElementById('sp-name').value.trim();
+  const username= document.getElementById('sp-username').value.trim();
+  const platform= document.getElementById('sp-platform').value;
+  const device  = document.getElementById('sp-device').value.trim();
+  const notes   = document.getElementById('sp-notes').value.trim();
+  const photo   = document.getElementById('sp-photo').files[0];
+
+  if(!name || !username) { showAlert(alertEl, 'error', 'Name and username are required'); return; }
+
+  try {
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('username', username);
+    formData.append('platform', platform);
+    formData.append('device', device);
+    formData.append('notes', notes);
+    if(photo) formData.append('photo', photo);
+
+    await fetch(API + '/api/suspects/add', { method: 'POST', body: formData });
+    showAlert(alertEl, 'success', `Suspect ${username} added to database`);
+    loadSuspects();
+    refreshAll();
+
+    // Clear form
+    ['sp-name','sp-username','sp-device','sp-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('sp-photo').value = '';
+
+  } catch(e) {
+    showAlert(alertEl, 'error', 'Failed to add suspect');
+  }
+}
+
+async function loadSuspects() {
+  try {
+    const suspects = await fetch(API + '/api/suspects/all').then(r => r.json());
+    const grid     = document.getElementById('suspect-grid');
+
+    if(!suspects.length) {
+      grid.innerHTML = `<div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);text-align:center;padding:30px 0;grid-column:1/-1;">No suspects added yet</div>`;
+      return;
+    }
+
+    grid.innerHTML = suspects.map(s => `
+      <div class="suspect-card">
+        <div class="suspect-avatar">
+          ${s.photo_url
+            ? `<img src="${API}/${s.photo_url}" onerror="this.parentElement.innerHTML='👤'">`
+            : '👤'}
+        </div>
+        <div class="suspect-name">${s.name}</div>
+        <div class="suspect-handle">${s.username}</div>
+        <span class="badge badge-medium">${s.platform}</span>
+        ${s.device ? `<div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:6px;">📱 ${s.device}</div>` : ''}
+      </div>
+    `).join('');
+
+  } catch(e) { console.error('Suspects load failed'); }
+}
+
+// ── EVIDENCE ──
+async function loadEvidence() {
+  try {
+    const evidence = await fetch(API + '/api/evidence/all').then(r => r.json());
+    const tbody    = document.getElementById('evidence-tbody');
+
+    if(!evidence.length) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px;">No evidence collected yet</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = evidence.map(e => {
+      const level  = (e.risk?.risk_level || 'LOW').toLowerCase();
+      const score  = e.risk?.score || 0;
+      const text   = (e.raw_text || '').slice(0, 50) + (e.raw_text?.length > 50 ? '...' : '');
+      const sent   = e.sentiment?.label || 'N/A';
+      const flagged= e.flagged ? `<span style="color:var(--accent2);">● YES</span>` : `<span style="color:var(--muted);">○ no</span>`;
+
+      return `
+        <tr>
+          <td><span style="color:var(--accent);font-family:var(--font-mono);">${e.author_username || '—'}</span></td>
+          <td><span style="color:var(--muted);">${e.source_platform || '—'}</span></td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${text || '—'}</td>
+          <td><span style="color:${sent==='negative'?'var(--accent2)':'var(--green)'};">${sent}</span></td>
+          <td><span style="font-family:var(--font-head);color:var(--accent);">${score}</span></td>
+          <td><span class="badge badge-${level}">${level.toUpperCase()}</span></td>
+          <td>${flagged}</td>
+        </tr>
+      `;
+    }).join('');
+
+  } catch(e) { console.error('Evidence load failed'); }
+}
+
+// ── TIMELINE ──
+function addTimelineEvent() {
+  const time     = document.getElementById('tl-time').value;
+  const title    = document.getElementById('tl-title').value.trim();
+  const desc     = document.getElementById('tl-desc').value.trim();
+  const severity = document.getElementById('tl-severity').value;
+
+  if(!title) return;
+
+  const item = document.createElement('div');
+  item.className = 'timeline-item';
+  item.innerHTML = `
+    <div class="timeline-dot ${severity}"></div>
+    <div class="timeline-time">${time || 'NOW'}</div>
+    <div class="timeline-title">${title}</div>
+    <div class="timeline-desc">${desc}</div>
+  `;
+
+  document.getElementById('timeline-list').appendChild(item);
+  document.getElementById('tl-title').value = '';
+  document.getElementById('tl-desc').value  = '';
+}
+
+// ── REPORT ──
+async function generateReport() {
+  const alertEl = document.getElementById('alert-report');
+  const title   = document.getElementById('rp-title').value;
+  const officer = document.getElementById('rp-officer').value;
+  const caseRef = document.getElementById('rp-case').value;
+
+  if(!officer) { showAlert(alertEl, 'error', 'Enter investigating officer name'); return; }
+
+  showAlert(alertEl, 'info', 'Generating report...');
+
+  try {
+    const res  = await fetch(API + '/api/reports/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        title,
+        investigator: officer,
+        case_number: caseRef,
+        include_flagged_only: document.getElementById('rp-flagged').checked
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.filename) {
+      showAlert(alertEl, 'success', 'Report generated successfully!');
+      const dl = document.getElementById('report-download');
+      dl.style.display = 'block';
+      document.getElementById('report-link').href = `${API}/api/reports/download/${data.filename}`;
+    }
+
+  } catch(e) {
+    showAlert(alertEl, 'error', 'Report generation failed. Is the server running?');
+  }
+}
+
+// ── UTILITY ──
+function showAlert(el, type, msg) {
+  el.className = `alert alert-${type} show`;
+  el.textContent = msg;
+  if(type !== 'info') setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ── INIT ──
+refreshAll();
+setTimeout(loadNetwork, 500);
+</script>
+</body>
+</html>
